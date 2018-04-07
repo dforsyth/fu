@@ -111,18 +111,25 @@ func main() {
 		log.Fatal(err)
 	}
 
-	repos, err := ctx.gh.UserRepos(&github.UserReposParams{UserName: ctx.username})
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	for _, repo := range repos {
-		if !repo.Fork {
-			continue
+	for p := 0; ; p++ {
+		repos, err := ctx.gh.UserRepos(&github.UserReposParams{UserName: ctx.username, Page: p, PerPage: 100})
+		if err != nil {
+			log.Fatal(err)
 		}
 
-		if err := ctx.updateForked(repo); err != nil {
-			log.Println(err)
+		for _, repo := range repos {
+			if !repo.Fork {
+				log.Println("Not a fork %+v", repo.Name)
+				continue
+			}
+
+			if err := ctx.updateForked(repo); err != nil {
+				log.Println(err)
+			}
+		}
+
+		if len(repos) < 100 {
+			break
 		}
 	}
 }
