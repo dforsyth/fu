@@ -119,7 +119,7 @@ func main() {
 
 		for _, repo := range repos {
 			if !repo.Fork {
-				log.Println("Not a fork %+v", repo.Name)
+				log.Printf("%s is not a fork", repo.Name)
 				continue
 			}
 
